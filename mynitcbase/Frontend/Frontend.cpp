@@ -58,21 +58,21 @@ int Frontend::insert_into_table_values(char relname[ATTR_SIZE], int attr_count, 
 
 int Frontend::select_from_table(char relname_source[ATTR_SIZE], char relname_target[ATTR_SIZE])
 {
-  // Algebra::project
+  // Algebra::project or cloning
   return Algebra::project(relname_source, relname_target);
 }
 
 int Frontend::select_attrlist_from_table(char relname_source[ATTR_SIZE], char relname_target[ATTR_SIZE],
                                          int attr_count, char attr_list[][ATTR_SIZE])
 {
-  // Algebra::project
+  // Algebra::project projection of attr1 attr2 attr3 ..
   return Algebra::project(relname_source, relname_target, attr_count, attr_list);
 }
 
 int Frontend::select_from_table_where(char relname_source[ATTR_SIZE], char relname_target[ATTR_SIZE],
                                       char attribute[ATTR_SIZE], int op, char value[ATTR_SIZE])
 {
-  // Algebra::select
+  // Algebra::select selection of required tuples
   return Algebra::select(relname_source, relname_target, attribute, op, value);
 }
 
@@ -80,6 +80,7 @@ int Frontend::select_attrlist_from_table_where(char relname_source[ATTR_SIZE], c
                                                int attr_count, char attr_list[][ATTR_SIZE],
                                                char attribute[ATTR_SIZE], int op, char value[ATTR_SIZE])
 {
+  // first select then project the required attributes
   // Algebra::select + Algebra::project??
   int ret = Algebra::select(relname_source, TEMP, attribute, op, value);
   if (ret != SUCCESS)

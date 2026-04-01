@@ -2,7 +2,7 @@
 
 #include <cstring>
 #include "BlockAccess.h"
-
+#include <stdio.h>
 #include <cstring>
 
 inline bool operator == (RecId lhs, RecId rhs) {
@@ -97,13 +97,7 @@ RecId BlockAccess::linearSearch(int relId, char attrName[ATTR_SIZE], union Attri
 	return RecId{-1, -1};
 }
 
-// 1. reset the searchIndex of the relation catalog
-// 2. search the relation catalog for an entry with relName = newName
-// 3. if found return E_RELEXIST
-// 4. if not found, search the relation catalog for an entry with relName = oldName
-// 5. update the relName field to newName
-// 6. similarly, search the attribute catalog for all entries with relName = oldName
-// 7. update the relName field to newName
+
 int BlockAccess::renameRelation(char oldName[ATTR_SIZE], char newName[ATTR_SIZE]){
 	RelCacheTable::resetSearchIndex(RELCAT_RELID);
 
@@ -164,15 +158,7 @@ int BlockAccess::renameRelation(char oldName[ATTR_SIZE], char newName[ATTR_SIZE]
     return SUCCESS;
 }
 
-// 1. reset the searchIndex of the relation catalog
-// 2. search the relation catalog for an entry with relName = relName
-// 3. if not found return E_RELNOTEXIST
-// 4. reset the searchIndex of the attribute catalog
-// 5. search the attribute catalog for an entry with relName = relName and attrName = newName
-// 6. if found return E_ATTREXIST
-// 7. search the attribute catalog for an entry with relName = relName and attrName = oldName
-// 8. if not found return E_ATTRNOTEXIST
-// 9. update the attrName field to newName
+
 int BlockAccess::renameAttribute(char relName[ATTR_SIZE], char oldName[ATTR_SIZE], char newName[ATTR_SIZE]) {
     // reset the searchIndex 
 	RelCacheTable::resetSearchIndex(RELCAT_RELID);
@@ -361,18 +347,37 @@ int BlockAccess::insert(int relId, Attribute *record) {
     return SUCCESS;
 }
 
+// Changeed in stage 10 by me on tuesday
 // search and return the record id of the first record in the relation which is true.
 int BlockAccess::search(int relId, Attribute *record, char attrName[ATTR_SIZE], Attribute attrVal, int op) {
+    
     RecId recId;
 
-    // linear search on the relation with relId for a record with attrName op attrVal
-	recId = BlockAccess::linearSearch(relId, attrName, attrVal, op);
+    AttrCatEntry attrCatEntry;
+    int ret = AttrCacheTable::getAttrCatEntry(relId, attrName, &attrCatEntry);
 
-	if (recId == RecId{-1, -1})
-       return E_NOTFOUND;
+    if (ret != SUCCESS)
+        return ret;
 
-   	RecBuffer blockBuffer (recId.block);
-   	blockBuffer.getRecord(record, recId.slot);
+    int rootBlock = attrCatEntry.rootBlock;
+
+    if (rootBlock == -1) {
+		// printf("Using Linear Search for searching\n");
+        recId = BlockAccess::linearSearch(relId, attrName, attrVal, op);
+    } else {
+		 printf("Using B+ trees for searching\n");
+        recId = BPlusTree::bPlusSearch(relId, attrName, attrVal, op);
+		
+    }
+
+    if (recId.block == -1 && recId.slot == -1)
+        return E_NOTFOUND;
+
+    RecBuffer buffer(recId.block);
+    ret = buffer.getRecord(record, recId.slot);
+
+    if (ret != SUCCESS)
+        return ret;
 
     return SUCCESS;
 }

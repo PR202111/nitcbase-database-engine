@@ -9,7 +9,6 @@
 #include "../Cache/AttrCacheTable.h"
 #include "../Cache/OpenRelTable.h"
 
-
 bool isNumber(char *str)
 {
     int len;
@@ -72,6 +71,7 @@ int Algebra::select(char srcRel[ATTR_SIZE], char targetRel[ATTR_SIZE], char attr
         strcpy(attrVal.sVal, strVal);
 
     RelCacheTable::resetSearchIndex(srcRelId);
+
     RelCatEntry relCat;
     if (RelCacheTable::getRelCatEntry(srcRelId, &relCat) != SUCCESS)
         return E_RELNOTOPEN;
@@ -97,6 +97,7 @@ int Algebra::select(char srcRel[ATTR_SIZE], char targetRel[ATTR_SIZE], char attr
     }
 
     RelCacheTable::resetSearchIndex(srcRelId);
+    AttrCacheTable::resetSearchIndex(srcRelId, attr);
     Attribute record[src_nAttrs];
 
     while (BlockAccess::search(srcRelId, record, attr, attrVal, op) == SUCCESS)
