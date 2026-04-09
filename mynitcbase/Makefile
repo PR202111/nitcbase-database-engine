@@ -1,7 +1,14 @@
+# ===== Build Mode =====
 ifeq ($(mode),debug)
 	CFLAGS := -g
 	BUILD_DIR = ./build/debug
 	TARGET = nitcbase-debug
+
+else ifeq ($(mode),trace)
+	CFLAGS := -DTRACE
+	BUILD_DIR = ./build/trace
+	TARGET = nitcbase-trace
+
 else
 	CFLAGS :=
 	BUILD_DIR = ./build
