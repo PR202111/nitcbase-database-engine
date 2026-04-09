@@ -2,6 +2,8 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "../trace_macros.h"
+
 BlockBuffer::BlockBuffer(char blocktype)
 {
   int blockType = blocktype == 'R' ? REC : blocktype == 'I' ? IND_INTERNAL
@@ -38,6 +40,7 @@ IndLeaf::IndLeaf(int blockNum) : IndBuffer(blockNum) {}
 
 int BlockBuffer::setHeader(struct HeadInfo *head)
 {
+  TRACE_FUNC("BlockBuffer");
   unsigned char *bufferPtr;
   int ret = loadBlockAndGetBufferPtr(&bufferPtr);
   if (ret != SUCCESS)
@@ -58,6 +61,7 @@ int BlockBuffer::setHeader(struct HeadInfo *head)
 
 int BlockBuffer::getHeader(struct HeadInfo *head)
 {
+  TRACE_FUNC("BlockBuffer");
   unsigned char *bufferPtr;
   int ret = loadBlockAndGetBufferPtr(&bufferPtr);
   if (ret != SUCCESS)
@@ -74,6 +78,7 @@ int BlockBuffer::getHeader(struct HeadInfo *head)
 
 int BlockBuffer::setBlockType(int blockType)
 {
+  TRACE_FUNC("BlockBuffer");
   unsigned char *bufferPtr;
   int ret = loadBlockAndGetBufferPtr(&bufferPtr);
   if (ret != SUCCESS)
@@ -88,6 +93,7 @@ int BlockBuffer::setBlockType(int blockType)
 
 int BlockBuffer::getFreeBlock(int blockType)
 {
+  TRACE_FUNC("BlockBuffer");
   int freeBlock = -1;
   for (int i = 0; i < DISK_BLOCKS; i++)
   {
@@ -122,6 +128,7 @@ int BlockBuffer::getFreeBlock(int blockType)
 
 int RecBuffer::getRecord(union Attribute *rec, int slotNum)
 {
+  TRACE_FUNC("RecBuffer");
   unsigned char *bufferPtr;
   int ret = loadBlockAndGetBufferPtr(&bufferPtr);
   if (ret != SUCCESS)
@@ -141,6 +148,7 @@ int RecBuffer::getRecord(union Attribute *rec, int slotNum)
 
 int RecBuffer::setRecord(union Attribute *rec, int slotNum)
 {
+  TRACE_FUNC("RecBuffer");
   unsigned char *bufferPtr;
   int ret = loadBlockAndGetBufferPtr(&bufferPtr);
   if (ret != SUCCESS)
@@ -161,6 +169,7 @@ int RecBuffer::setRecord(union Attribute *rec, int slotNum)
 
 int BlockBuffer::loadBlockAndGetBufferPtr(unsigned char **buffPtr)
 {
+  TRACE_FUNC("BlockBuffer");
   int bufferNum = StaticBuffer::getBufferNum(this->blockNum);
   if (bufferNum != E_BLOCKNOTINBUFFER && bufferNum != E_OUTOFBOUND)
   {
@@ -184,6 +193,7 @@ int BlockBuffer::loadBlockAndGetBufferPtr(unsigned char **buffPtr)
 
 int RecBuffer::getSlotMap(unsigned char *slotMap)
 {
+  TRACE_FUNC("RecBuffer");
   unsigned char *bufferPtr;
   int ret = loadBlockAndGetBufferPtr(&bufferPtr);
   if (ret != SUCCESS)
@@ -202,6 +212,7 @@ int RecBuffer::getSlotMap(unsigned char *slotMap)
 
 int compareAttrs(union Attribute attr1, union Attribute attr2, int attrType)
 {
+  TRACE_FUNC("BlockBuffer");
   double diff;
   if (attrType == STRING)
     diff = strcmp(attr1.sVal, attr2.sVal); // ? compare strings and keep difference
@@ -216,6 +227,7 @@ int compareAttrs(union Attribute attr1, union Attribute attr2, int attrType)
 
 int RecBuffer::setSlotMap(unsigned char *slotMap)
 {
+  TRACE_FUNC("RecBuffer");
   unsigned char *bufferPtr;
   int ret = loadBlockAndGetBufferPtr(&bufferPtr);
   if (ret != SUCCESS)
@@ -235,11 +247,13 @@ int RecBuffer::setSlotMap(unsigned char *slotMap)
 
 int BlockBuffer::getBlockNum()
 {
+  TRACE_FUNC("BlockBuffer");
   return this->blockNum;
 }
 
 void BlockBuffer::releaseBlock()
 {
+  TRACE_FUNC("BlockBuffer");
   if (blockNum == INVALID_BLOCKNUM || StaticBuffer::blockAllocMap[blockNum] == UNUSED_BLK)
     return;
   int bufferNum = StaticBuffer::getBufferNum(blockNum);
@@ -252,6 +266,7 @@ void BlockBuffer::releaseBlock()
 
 int IndInternal::getEntry(void *ptr, int indexNum)
 {
+  TRACE_FUNC("IndInternal");
   if (indexNum < 0 || indexNum >= MAX_KEYS_INTERNAL)
     return E_OUTOFBOUND;
   unsigned char *bufferPtr;
@@ -269,6 +284,7 @@ int IndInternal::getEntry(void *ptr, int indexNum)
 
 int IndLeaf::getEntry(void *ptr, int indexNum)
 {
+  TRACE_FUNC("IndLeaf");
   if (indexNum < 0 || indexNum >= MAX_KEYS_LEAF)
     return E_OUTOFBOUND;
   unsigned char *bufferPtr;
@@ -283,6 +299,7 @@ int IndLeaf::getEntry(void *ptr, int indexNum)
 
 int IndInternal::setEntry(void *ptr, int indexNum)
 {
+  TRACE_FUNC("IndInternal");
   if (indexNum < 0 || indexNum >= MAX_KEYS_INTERNAL)
     return E_OUTOFBOUND;
   unsigned char *bufferPtr;
@@ -302,6 +319,7 @@ int IndInternal::setEntry(void *ptr, int indexNum)
 
 int IndLeaf::setEntry(void *ptr, int indexNum)
 {
+  TRACE_FUNC("IndLeaf");
   if (indexNum < 0 || indexNum >= MAX_KEYS_LEAF)
     return E_OUTOFBOUND;
   unsigned char *bufferPtr;

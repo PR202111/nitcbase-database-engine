@@ -1,10 +1,13 @@
 #include "RelCacheTable.h"
 #include <cstring>
 
+#include "../trace_macros.h"
+
 RelCacheEntry *RelCacheTable::relCache[MAX_OPEN];
 
 int RelCacheTable::getRelCatEntry(int relId, RelCatEntry *relCatBuf)
 {
+  TRACE_FUNC("RelCacheTable");
   if (relId < 0 || relId >= MAX_OPEN)
     return E_OUTOFBOUND;
   if (relCache[relId] == nullptr)
@@ -15,6 +18,7 @@ int RelCacheTable::getRelCatEntry(int relId, RelCatEntry *relCatBuf)
 
 int RelCacheTable::setRelCatEntry(int relId, RelCatEntry *relCatBuf)
 {
+  TRACE_FUNC("RelCacheTable");
   if (relId < 0 || relId >= MAX_OPEN)
     return E_OUTOFBOUND;
   if (relCache[relId] == nullptr)
@@ -26,6 +30,7 @@ int RelCacheTable::setRelCatEntry(int relId, RelCatEntry *relCatBuf)
 
 void RelCacheTable::recordToRelCatEntry(union Attribute record[RELCAT_NO_ATTRS], RelCatEntry *relCatEntry)
 {
+  TRACE_FUNC("RelCacheTable");
   strcpy(relCatEntry->relName, record[RELCAT_REL_NAME_INDEX].sVal);
   relCatEntry->numAttrs = (int)record[RELCAT_NO_ATTRIBUTES_INDEX].nVal;
   relCatEntry->numRecs = (int)record[RELCAT_NO_RECORDS_INDEX].nVal;
@@ -36,6 +41,7 @@ void RelCacheTable::recordToRelCatEntry(union Attribute record[RELCAT_NO_ATTRS],
 
 void RelCacheTable::relCatEntryToRecord(RelCatEntry *relCatEntry, union Attribute record[RELCAT_NO_ATTRS])
 {
+  TRACE_FUNC("RelCacheTable");
   strcpy(record[RELCAT_REL_NAME_INDEX].sVal, relCatEntry->relName);
   record[RELCAT_NO_ATTRIBUTES_INDEX].nVal = relCatEntry->numAttrs;
   record[RELCAT_NO_RECORDS_INDEX].nVal = relCatEntry->numRecs;
@@ -46,6 +52,7 @@ void RelCacheTable::relCatEntryToRecord(RelCatEntry *relCatEntry, union Attribut
 
 int RelCacheTable::getSearchIndex(int relId, RecId *searchIndex)
 {
+  TRACE_FUNC("RelCacheTable");
   if (relId < 0 || relId >= MAX_OPEN)
     return E_OUTOFBOUND;
   if (relCache[relId] == nullptr)
@@ -56,6 +63,7 @@ int RelCacheTable::getSearchIndex(int relId, RecId *searchIndex)
 
 int RelCacheTable::setSearchIndex(int relId, RecId *searchIndex)
 {
+  TRACE_FUNC("RelCacheTable");
   if (relId < 0 || relId >= MAX_OPEN)
     return E_OUTOFBOUND;
   if (relCache[relId] == nullptr)
@@ -66,6 +74,7 @@ int RelCacheTable::setSearchIndex(int relId, RecId *searchIndex)
 
 int RelCacheTable::resetSearchIndex(int relId)
 {
+  TRACE_FUNC("RelCacheTable");
   if (relId < 0 || relId >= MAX_OPEN)
     return E_OUTOFBOUND;
   if (relCache[relId] == nullptr)

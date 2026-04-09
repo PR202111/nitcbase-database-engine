@@ -1,10 +1,13 @@
 #include "AttrCacheTable.h"
 #include <cstring>
 
+#include "../trace_macros.h"
+
 AttrCacheEntry *AttrCacheTable::attrCache[MAX_OPEN];
 
 int AttrCacheTable::getAttrCatEntry(int relId, int attrOffset, AttrCatEntry *attrCatBuf)
 {
+  TRACE_FUNC("AttrCacheTable");
   if (relId < 0 || relId >= MAX_OPEN)
     return E_OUTOFBOUND;
   if (attrCache[relId] == nullptr)
@@ -22,6 +25,7 @@ int AttrCacheTable::getAttrCatEntry(int relId, int attrOffset, AttrCatEntry *att
 
 int AttrCacheTable::getAttrCatEntry(int relId, char attrName[ATTR_SIZE], AttrCatEntry *attrCatBuf)
 {
+  TRACE_FUNC("AttrCacheTable");
   if (relId < 0 || relId >= MAX_OPEN)
     return E_OUTOFBOUND;
   if (attrCache[relId] == nullptr)
@@ -39,6 +43,7 @@ int AttrCacheTable::getAttrCatEntry(int relId, char attrName[ATTR_SIZE], AttrCat
 
 int AttrCacheTable::setAttrCatEntry(int relId, int attrOffset, AttrCatEntry *attrCatBuf)
 {
+  TRACE_FUNC("AttrCacheTable");
   if (relId < 0 || relId >= MAX_OPEN)
     return E_OUTOFBOUND;
   if (attrCache[relId] == nullptr)
@@ -62,6 +67,7 @@ int AttrCacheTable::setAttrCatEntry(int relId, int attrOffset, AttrCatEntry *att
 
 int AttrCacheTable::setAttrCatEntry(int relId, char attrName[ATTR_SIZE], AttrCatEntry *attrCatBuf)
 {
+  TRACE_FUNC("AttrCacheTable");
   if (relId < 0 || relId >= MAX_OPEN)
     return E_OUTOFBOUND;
   if (attrCache[relId] == nullptr)
@@ -86,6 +92,7 @@ int AttrCacheTable::setAttrCatEntry(int relId, char attrName[ATTR_SIZE], AttrCat
 
 void AttrCacheTable::recordToAttrCatEntry(union Attribute record[ATTRCAT_NO_ATTRS], AttrCatEntry *attrCatEntry)
 {
+  TRACE_FUNC("AttrCacheTable");
   strcpy(attrCatEntry->relName, record[ATTRCAT_REL_NAME_INDEX].sVal);
   strcpy(attrCatEntry->attrName, record[ATTRCAT_ATTR_NAME_INDEX].sVal);
   attrCatEntry->attrType = (int)record[ATTRCAT_ATTR_TYPE_INDEX].nVal;
@@ -96,6 +103,7 @@ void AttrCacheTable::recordToAttrCatEntry(union Attribute record[ATTRCAT_NO_ATTR
 
 void AttrCacheTable::attrCatEntryToRecord(AttrCatEntry *attrCatEntry, union Attribute record[ATTRCAT_NO_ATTRS])
 {
+  TRACE_FUNC("AttrCacheTable");
   strcpy(record[ATTRCAT_REL_NAME_INDEX].sVal, attrCatEntry->relName);
   strcpy(record[ATTRCAT_ATTR_NAME_INDEX].sVal, attrCatEntry->attrName);
   record[ATTRCAT_ATTR_TYPE_INDEX].nVal = attrCatEntry->attrType;
@@ -106,6 +114,7 @@ void AttrCacheTable::attrCatEntryToRecord(AttrCatEntry *attrCatEntry, union Attr
 
 int AttrCacheTable::getSearchIndex(int relId, int attrOffset, IndexId *searchIndex)
 {
+  TRACE_FUNC("AttrCacheTable");
   if (relId < 0 || relId >= MAX_OPEN)
     return E_OUTOFBOUND;
   if (attrCache[relId] == nullptr)
@@ -123,6 +132,7 @@ int AttrCacheTable::getSearchIndex(int relId, int attrOffset, IndexId *searchInd
 
 int AttrCacheTable::getSearchIndex(int relId, char attrName[ATTR_SIZE], IndexId *searchIndex)
 {
+  TRACE_FUNC("AttrCacheTable");
   if (relId < 0 || relId >= MAX_OPEN)
     return E_OUTOFBOUND;
   if (attrCache[relId] == nullptr)
@@ -140,7 +150,7 @@ int AttrCacheTable::getSearchIndex(int relId, char attrName[ATTR_SIZE], IndexId 
 
 int AttrCacheTable::setSearchIndex(int relId, int attrOffset, IndexId *searchIndex)
 {
-  {
+    TRACE_FUNC("AttrCacheTable");
     if (relId < 0 || relId >= MAX_OPEN)
       return E_OUTOFBOUND;
     if (attrCache[relId] == nullptr)
@@ -154,12 +164,12 @@ int AttrCacheTable::setSearchIndex(int relId, int attrOffset, IndexId *searchInd
       }
     }
     return E_ATTRNOTEXIST;
-  }
+  
 }
 
 int AttrCacheTable::setSearchIndex(int relId, char attrName[ATTR_SIZE], IndexId *searchIndex)
 {
-  {
+    TRACE_FUNC("AttrCacheTable");
     if (relId < 0 || relId >= MAX_OPEN)
       return E_OUTOFBOUND;
     if (attrCache[relId] == nullptr)
@@ -173,17 +183,19 @@ int AttrCacheTable::setSearchIndex(int relId, char attrName[ATTR_SIZE], IndexId 
       }
     }
     return E_ATTRNOTEXIST;
-  }
+  
 }
 
 int AttrCacheTable::resetSearchIndex(int relId, int attrOffset)
 {
+  TRACE_FUNC("AttrCacheTable");
   IndexId searchIndex{-1, -1};
   return AttrCacheTable::setSearchIndex(relId, attrOffset, &searchIndex);
 }
 
 int AttrCacheTable::resetSearchIndex(int relId, char attrName[ATTR_SIZE])
 {
+  TRACE_FUNC("AttrCacheTable");
   IndexId searchIndex{-1, -1};
   return AttrCacheTable::setSearchIndex(relId, attrName, &searchIndex);
 }

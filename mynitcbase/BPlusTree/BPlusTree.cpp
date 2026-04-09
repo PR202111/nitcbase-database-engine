@@ -2,8 +2,11 @@
 #include <cstring>
 #include <iostream>
 
+#include "../trace_macros.h"
+
 RecId BPlusTree::bPlusSearch(int relId, char attrName[ATTR_SIZE], Attribute attrVal, int op)
 {
+  TRACE_FUNC("BPlusTree");
   IndexId searchIndex;
   AttrCacheTable::getSearchIndex(relId, attrName, &searchIndex);
   AttrCatEntry attrcatentry;
@@ -73,6 +76,7 @@ RecId BPlusTree::bPlusSearch(int relId, char attrName[ATTR_SIZE], Attribute attr
 
   while (block != -1)
   {
+    TRACE_FUNC("BPlusTree");
     IndLeaf leafblk(block);
     HeadInfo leafHead;
     leafblk.getHeader(&leafHead);
@@ -106,6 +110,7 @@ RecId BPlusTree::bPlusSearch(int relId, char attrName[ATTR_SIZE], Attribute attr
 
 int BPlusTree::bPlusCreate(int relId, char attrName[ATTR_SIZE])
 {
+  TRACE_FUNC("BPlusTree");
   if (relId == RELCAT_RELID || relId == ATTRCAT_RELID)
     return E_NOTPERMITTED;
   AttrCatEntry attrcatentry;
@@ -161,6 +166,7 @@ int BPlusTree::bPlusCreate(int relId, char attrName[ATTR_SIZE])
 
 int BPlusTree::bPlusDestroy(int rootBlockNum)
 {
+  TRACE_FUNC("BPlusTree");
   if (rootBlockNum < 0 || rootBlockNum >= DISK_BLOCKS)
     return E_OUTOFBOUND;
   int type = StaticBuffer::getStaticBlockType(rootBlockNum);
@@ -195,6 +201,7 @@ int BPlusTree::bPlusDestroy(int rootBlockNum)
 
 int BPlusTree::bPlusInsert(int relId, char attrName[ATTR_SIZE], Attribute attrVal, RecId recId)
 {
+  TRACE_FUNC("BPlusTree");
   AttrCatEntry attrcatentry;
   int ret = AttrCacheTable::getAttrCatEntry(relId, attrName, &attrcatentry);
   if (ret != SUCCESS)
@@ -220,6 +227,7 @@ int BPlusTree::bPlusInsert(int relId, char attrName[ATTR_SIZE], Attribute attrVa
 
 int BPlusTree::findLeafToInsert(int rootBlock, Attribute attrVal, int attrType)
 {
+  TRACE_FUNC("BPlusTree");
   int blockNum = rootBlock;
   while (StaticBuffer::getStaticBlockType(blockNum) != IND_LEAF)
   {
@@ -252,6 +260,7 @@ int BPlusTree::findLeafToInsert(int rootBlock, Attribute attrVal, int attrType)
 
 int BPlusTree::insertIntoLeaf(int relId, char attrName[ATTR_SIZE], int blockNum, Index indexEntry)
 {
+  TRACE_FUNC("BPlusTree");
   AttrCatEntry attrcatentry;
   int ret = AttrCacheTable::getAttrCatEntry(relId, attrName, &attrcatentry);
   if (ret != SUCCESS)
@@ -316,6 +325,7 @@ int BPlusTree::insertIntoLeaf(int relId, char attrName[ATTR_SIZE], int blockNum,
 
 int BPlusTree::splitLeaf(int leafBlockNum, Index indices[])
 {
+  TRACE_FUNC("BPlusTree");
   IndLeaf rightBlk;
   IndLeaf leftBlk(leafBlockNum);
   int rightBlkNum = rightBlk.getBlockNum();
@@ -359,6 +369,7 @@ int BPlusTree::splitLeaf(int leafBlockNum, Index indices[])
 
 int BPlusTree::insertIntoInternal(int relId, char attrName[ATTR_SIZE], int intBlockNum, InternalEntry intEntry)
 {
+  TRACE_FUNC("BPlusTree");
   AttrCatEntry attrcatentry;
   int ret = AttrCacheTable::getAttrCatEntry(relId, attrName, &attrcatentry);
   if (ret != SUCCESS)
@@ -424,6 +435,7 @@ int BPlusTree::insertIntoInternal(int relId, char attrName[ATTR_SIZE], int intBl
 
 int BPlusTree::splitInternal(int intBlockNum, InternalEntry internalEntries[])
 {
+  TRACE_FUNC("BPlusTree");
   IndInternal rightBlk;
   IndInternal leftBlk(intBlockNum);
   int rightBlkNum = rightBlk.getBlockNum();
@@ -488,6 +500,7 @@ int BPlusTree::splitInternal(int intBlockNum, InternalEntry internalEntries[])
 
 int BPlusTree::createNewRoot(int relId, char attrName[ATTR_SIZE], Attribute attrVal, int lChild, int rChild)
 {
+  TRACE_FUNC("BPlusTree");
   AttrCatEntry attrcatentry;
   int ret = AttrCacheTable::getAttrCatEntry(relId, attrName, &attrcatentry);
   if (ret != SUCCESS)

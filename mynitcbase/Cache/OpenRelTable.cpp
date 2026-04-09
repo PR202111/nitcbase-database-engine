@@ -2,10 +2,12 @@
 #include <cstring>
 #include <stdlib.h>
 
+#include "../trace_macros.h"
+
 OpenRelTableMetaInfo OpenRelTable::tableMetaInfo[MAX_OPEN];
 OpenRelTable::OpenRelTable()
 {
-
+  TRACE_FUNC("OpenRelTable");
   for (int i = 0; i < MAX_OPEN; i++)
   {
     RelCacheTable::relCache[i] = nullptr;
@@ -94,6 +96,7 @@ OpenRelTable::OpenRelTable()
 
 OpenRelTable::~OpenRelTable()
 {
+  TRACE_FUNC("OpenRelTable");
   for (int i = 2; i < MAX_OPEN; ++i)
   {
     if (!tableMetaInfo[i].free)
@@ -140,6 +143,7 @@ OpenRelTable::~OpenRelTable()
 
 int OpenRelTable::getRelId(char relName[ATTR_SIZE])
 {
+  TRACE_FUNC("OpenRelTable");
   for (int cacheslot = 0; cacheslot < MAX_OPEN; cacheslot++)
   {
     if (!tableMetaInfo[cacheslot].free && strcmp(tableMetaInfo[cacheslot].relName, relName) == 0)
@@ -150,7 +154,7 @@ int OpenRelTable::getRelId(char relName[ATTR_SIZE])
 
 int OpenRelTable::getFreeOpenRelTableEntry()
 {
-
+  TRACE_FUNC("OpenRelTable");
   for (int cacheSlot = 2; cacheSlot < MAX_OPEN; cacheSlot++)
   {
     if (tableMetaInfo[cacheSlot].free)
@@ -160,7 +164,8 @@ int OpenRelTable::getFreeOpenRelTableEntry()
 }
 
 int OpenRelTable::openRel(char relName[ATTR_SIZE])
-{
+{ 
+  TRACE_FUNC("OpenRelTable");
   int existing = getRelId(relName);
   if (existing != E_RELNOTOPEN)
     return existing;
@@ -221,6 +226,7 @@ int OpenRelTable::openRel(char relName[ATTR_SIZE])
 
 int OpenRelTable::closeRel(int relId)
 {
+  TRACE_FUNC("OpenRelTable");
   if (relId == RELCAT_RELID || relId == ATTRCAT_RELID)
     return E_NOTPERMITTED;
 

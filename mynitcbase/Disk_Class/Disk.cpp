@@ -1,9 +1,9 @@
 #include "Disk.h"
-
 #include <fstream>
 #include <iostream>
-
 #include "../define/constants.h"
+
+#include "../trace_macros.h"
 
 /*
  * Used to make a temporary copy of the disk contents before the starting of a new session.
@@ -11,6 +11,7 @@
  * the previous state of the disk is not lost.
  */
 Disk::Disk() {
+  TRACE_FUNC("Disk");
   /* An efficient method to copy files */
   /* Copy Disk to Disk Run Copy */
   std::ifstream src(DISK_PATH, std::ios::binary);
@@ -26,6 +27,7 @@ Disk::Disk() {
  * This ensures that these changes are visible in future sessions.
  */
 Disk::~Disk() {
+  TRACE_FUNC("Disk");
   /* An efficient method to copy files */
   /* Copy Disk Run Copy to Disk */
   std::ifstream src(DISK_RUN_COPY_PATH, std::ios::binary);
@@ -43,6 +45,7 @@ Disk::~Disk() {
  * blockNum - Block number of the disk block to be read.
  */
 int Disk::readBlock(unsigned char *block, int blockNum) {
+  TRACE_FUNC("Disk");
   FILE *disk = fopen(DISK_RUN_COPY_PATH, "rb");
   if (blockNum < 0 || blockNum > DISK_BLOCKS - 1) {
     return E_OUTOFBOUND;
@@ -61,6 +64,7 @@ int Disk::readBlock(unsigned char *block, int blockNum) {
  * blockNum - Block number of the disk block to be written into.
  */
 int Disk::writeBlock(unsigned char *block, int blockNum) {
+  TRACE_FUNC("Disk");
   FILE *disk = fopen(DISK_RUN_COPY_PATH, "rb+");
   if (blockNum < 0 || blockNum > DISK_BLOCKS - 1) {
     return E_OUTOFBOUND;

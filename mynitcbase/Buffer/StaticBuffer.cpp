@@ -2,6 +2,8 @@
 #include "stdlib.h"
 #include <cstring>
 
+#include "../trace_macros.h"
+
 unsigned char StaticBuffer::blocks[BUFFER_CAPACITY][BLOCK_SIZE];
 struct BufferMetaInfo StaticBuffer::metainfo[BUFFER_CAPACITY];
 unsigned char StaticBuffer::blockAllocMap[DISK_BLOCKS];
@@ -9,6 +11,7 @@ unsigned char StaticBuffer::blockAllocMap[DISK_BLOCKS];
 
 StaticBuffer::StaticBuffer()
 {
+  TRACE_FUNC("StaticBuffer");
   for (int bufferidx = 0; bufferidx < BUFFER_CAPACITY; bufferidx++)
   {
     metainfo[bufferidx].free = true;
@@ -31,6 +34,7 @@ StaticBuffer::StaticBuffer()
 
 StaticBuffer::~StaticBuffer()
 {
+  TRACE_FUNC("StaticBuffer");
   for (int bufferidx = 0; bufferidx < BUFFER_CAPACITY; bufferidx++)
   {
     if (metainfo[bufferidx].free == false && metainfo[bufferidx].dirty == true)
@@ -43,6 +47,7 @@ StaticBuffer::~StaticBuffer()
 
 int StaticBuffer::getFreeBuffer(int blockNum)
 {
+  TRACE_FUNC("StaticBuffer");
   if (blockNum < 0 || blockNum >= DISK_BLOCKS)
     return E_OUTOFBOUND;
   for (int bufferidx = 0; bufferidx < BUFFER_CAPACITY; bufferidx++)
@@ -83,6 +88,7 @@ int StaticBuffer::getFreeBuffer(int blockNum)
 
 int StaticBuffer::getBufferNum(int blockNum)
 {
+  TRACE_FUNC("StaticBuffer");
   if (blockNum < 0 || blockNum >= DISK_BLOCKS)
     return E_OUTOFBOUND;
   for (int bufferidx = 0; bufferidx < BUFFER_CAPACITY; bufferidx++)
@@ -95,6 +101,7 @@ int StaticBuffer::getBufferNum(int blockNum)
 
 int StaticBuffer::setDirtyBit(int blockNum)
 {
+  TRACE_FUNC("StaticBuffer");
   int bufferNum = getBufferNum(blockNum);
   if (bufferNum == E_BLOCKNOTINBUFFER)
     return E_BLOCKNOTINBUFFER;
@@ -107,6 +114,7 @@ int StaticBuffer::setDirtyBit(int blockNum)
 
 int StaticBuffer::getStaticBlockType(int blockNum)
 {
+  TRACE_FUNC("StaticBuffer");
   if (blockNum < 0 || blockNum >= DISK_BLOCKS)
     return E_OUTOFBOUND;
   return (int)blockAllocMap[blockNum];

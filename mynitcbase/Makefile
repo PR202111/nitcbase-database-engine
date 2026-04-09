@@ -3,68 +3,32 @@ ifeq ($(mode),debug)
 	BUILD_DIR = ./build/debug
 	TARGET = nitcbase-debug
 else
-	TARGET = nitcbase
+	CFLAGS :=
 	BUILD_DIR = ./build
+	TARGET = nitcbase
 endif
 
+# ===== Directories =====
 SUBDIR = FrontendInterface Frontend Algebra Schema BlockAccess BPlusTree Cache Buffer Disk_Class
 
-HEADERS = $(wildcard define/*.h $(foreach fd, $(SUBDIR), $(fd)/*.h))
-SRCS = $(wildcard main.cpp $(foreach fd, $(SUBDIR), $(fd)/*.cpp))
-OBJS = $(addprefix $(BUILD_DIR)/, $(SRCS:cpp=o))
+# ===== Source Files =====
+SRCS = main.cpp trace.cpp $(foreach fd,$(SUBDIR),$(wildcard $(fd)/*.cpp))
 
+# ===== Object Files =====
+OBJS = $(addprefix $(BUILD_DIR)/,$(SRCS:.cpp=.o))
+
+# ===== Headers =====
+HEADERS = $(wildcard define/*.h trace.h $(foreach fd,$(SUBDIR),$(fd)/*.h))
+
+# ===== Build Target =====
 $(TARGET): $(OBJS)
 	g++ $(CFLAGS) -o $@ $(OBJS) -lreadline
 
+# ===== Compile Rule =====
 $(BUILD_DIR)/%.o: %.cpp $(HEADERS)
-	mkdir -p $(@D)
-	g++ $(CFLAGS) -o $@ -c $<
+	@mkdir -p $(@D)
+	g++ $(CFLAGS) -c $< -o $@
 
+# ===== Clean =====
 clean:
-	rm -rf $(BUILD_DIR)/*
-
-# ===== Build Mode =====
-# ifeq ($(mode),debug)
-# 	CFLAGS := -g -DTRACE
-# 	BUILD_DIR = ./build/debug
-# 	TARGET = nitcbase-debug
-# else
-# 	CFLAGS :=
-# 	BUILD_DIR = ./build
-# 	TARGET = nitcbase
-# endif
-
-# # ===== Project Structure =====
-# SUBDIR = FrontendInterface Frontend Algebra Schema BlockAccess BPlusTree Cache Buffer Disk_Class
-
-# SRCS = $(wildcard main.cpp $(foreach fd,$(SUBDIR),$(fd)/*.cpp))
-# OBJS = $(addprefix $(BUILD_DIR)/,$(SRCS:.cpp=.o))
-# DEPS = $(OBJS:.o=.d)
-
-# # ===== Build Target =====
-# $(TARGET): $(OBJS)
-# 	g++ $(CFLAGS) -o $@ $(OBJS) -lreadline
-
-# # ===== Compile Rule (AUTO DEPENDENCY GENERATION) =====
-# $(BUILD_DIR)/%.o: %.cpp
-# 	@mkdir -p $(@D)
-# 	g++ $(CFLAGS) -MMD -MP -c $< -o $@
-
-# # ===== Include dependency files =====
-# -include $(DEPS)
-
-# # ===== Print File Dependency Tree =====
-# print-deps:
-# 	@echo "==== FILE DEPENDENCIES ===="
-# 	@find $(BUILD_DIR) -name "*.d" | sort | while read f; do \
-# 		echo "\n---- $$f ----"; \
-# 		cat $$f; \
-# 	done
-
-# # ===== Function Call Graph =====
-# callgraph:
-# 	cflow $(SRCS)
-
-# # ===== Clean =====
-# clean:
-# 	rm -rf $(BUILD_DIR)/* $(TARGET)
+	rm -rf $(BUILD_DIR) $(TARGET)

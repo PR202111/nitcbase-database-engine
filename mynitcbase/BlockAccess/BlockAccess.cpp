@@ -1,8 +1,11 @@
 #include "BlockAccess.h"
 #include <cstring>
 
+#include "../trace_macros.h"
+
 RecId BlockAccess::linearSearch(int relId, char attrName[ATTR_SIZE], union Attribute attrVal, int op)
 {
+  TRACE_FUNC("BlockAccess");
   RecId prevRecId;
   RelCacheTable::getSearchIndex(relId, &prevRecId);
 
@@ -71,6 +74,7 @@ RecId BlockAccess::linearSearch(int relId, char attrName[ATTR_SIZE], union Attri
 
 int BlockAccess::renameRelation(char oldName[ATTR_SIZE], char newName[ATTR_SIZE])
 {
+  TRACE_FUNC("BlockAccess");
   RelCacheTable::resetSearchIndex(RELCAT_RELID);
 
   Attribute newRelationName;
@@ -119,6 +123,7 @@ int BlockAccess::renameRelation(char oldName[ATTR_SIZE], char newName[ATTR_SIZE]
 
 int BlockAccess::renameAttribute(char relName[ATTR_SIZE], char oldName[ATTR_SIZE], char newName[ATTR_SIZE])
 {
+  TRACE_FUNC("BlockAccess");
   RelCacheTable::resetSearchIndex(RELCAT_RELID);
 
   Attribute relNameAttr; // ? set relNameAttr to relName
@@ -161,6 +166,7 @@ int BlockAccess::renameAttribute(char relName[ATTR_SIZE], char oldName[ATTR_SIZE
 
 int BlockAccess::insert(int relId, Attribute *record)
 {
+  TRACE_FUNC("BlockAccess");
   RelCatEntry relEntry;
   int ret = RelCacheTable::getRelCatEntry(relId, &relEntry);
   if (ret != SUCCESS)
@@ -285,6 +291,7 @@ int BlockAccess::insert(int relId, Attribute *record)
 
 int BlockAccess::search(int relId, Attribute *record, char attrName[ATTR_SIZE], Attribute attrVal, int op)
 {
+  TRACE_FUNC("BlockAccess");
   RecId recId;
   AttrCatEntry attrcatentry;
   int ret = AttrCacheTable::getAttrCatEntry(relId, attrName, &attrcatentry);
@@ -304,6 +311,7 @@ int BlockAccess::search(int relId, Attribute *record, char attrName[ATTR_SIZE], 
 
 int BlockAccess::deleteRelation(char relName[ATTR_SIZE])
 {
+  TRACE_FUNC("BlockAccess");
   if (strcmp(relName, RELCAT_RELNAME) == 0 || strcmp(relName, ATTRCAT_RELNAME) == 0)
     return E_NOTPERMITTED;
   int ret = RelCacheTable::resetSearchIndex(RELCAT_RELID);
@@ -425,6 +433,7 @@ int BlockAccess::deleteRelation(char relName[ATTR_SIZE])
 
 int BlockAccess::project(int relId, Attribute *record)
 {
+  TRACE_FUNC("BlockAccess");
   int ret;
   RecId prevRecId;
   RelCacheTable::getSearchIndex(relId, &prevRecId);

@@ -13,6 +13,8 @@
 #include "../Frontend/Frontend.h"
 #include "../define/constants.h"
 
+#include "../trace_macros.h"
+
 using namespace std;
 
 int getOperator(string op_str);
@@ -465,12 +467,14 @@ int RegexHandler::customFunctionHandler() {
 }
 
 int RegexHandler::handle(const string command) {
+  TRACE_START(command);
   for (auto iter = handlers.begin(); iter != handlers.end(); ++iter) {
     regex testCommand = iter->first;
     handlerFunction handler = iter->second;
     if (regex_match(command, testCommand)) {
       regex_search(command, m, testCommand);
       int status = (this->*handler)();
+      TRACE_END();
       if (status == SUCCESS || status == EXIT) {
         return status;
       }
@@ -479,6 +483,7 @@ int RegexHandler::handle(const string command) {
     }
   }
   cout << "Syntax Error" << endl;
+  TRACE_END(); 
   return FAILURE;
 }
 

@@ -10,10 +10,13 @@
 #include "../Cache/OpenRelTable.h"
 #include "../Buffer/StaticBuffer.h"
 
+#include "../trace_macros.h"
+
 #define COL_WIDTH 15
 
 bool isNumber(char *str)
 {
+  TRACE_FUNC("Algebra");
   int len;
   float ignore;
   int ret = sscanf(str, "%f %n", &ignore, &len);
@@ -22,6 +25,7 @@ bool isNumber(char *str)
 
 int Algebra::insert(char relName[ATTR_SIZE], int nAttrs, char record[][ATTR_SIZE])
 {
+  TRACE_FUNC("Algebra");
   if (strcmp(relName, RELCAT_RELNAME) == 0 || strcmp(relName, ATTRCAT_RELNAME) == 0)
     return E_NOTPERMITTED;
   int relId = OpenRelTable::getRelId(relName);
@@ -56,6 +60,7 @@ int Algebra::insert(char relName[ATTR_SIZE], int nAttrs, char record[][ATTR_SIZE
 
 int Algebra::select(char srcRel[ATTR_SIZE], char targetRel[ATTR_SIZE], char attr[ATTR_SIZE], int op, char strVal[ATTR_SIZE])
 {
+  TRACE_FUNC("Algebra");
   int srcRelId = OpenRelTable::getRelId(srcRel);
   if (srcRelId == E_RELNOTOPEN)
     return E_RELNOTOPEN;
@@ -134,9 +139,6 @@ int Algebra::select(char srcRel[ATTR_SIZE], char targetRel[ATTR_SIZE], char attr
   while (BlockAccess::search(srcRelId, record, attr, attrVal, op) == SUCCESS)
   {
     
-
-    
-
     ret = BlockAccess::insert(targetRelId, record);
 
     
@@ -158,6 +160,7 @@ int Algebra::select(char srcRel[ATTR_SIZE], char targetRel[ATTR_SIZE], char attr
 // project all attributes
 int Algebra::project(char srcRel[ATTR_SIZE], char targetRel[ATTR_SIZE])
 {
+  TRACE_FUNC("Algebra");
   int srcRelId = OpenRelTable::getRelId(srcRel);
   if (srcRelId == E_RELNOTOPEN)
     return E_RELNOTOPEN;
@@ -208,6 +211,7 @@ int Algebra::project(char srcRel[ATTR_SIZE], char targetRel[ATTR_SIZE])
 // project specified attributes
 int Algebra::project(char srcRel[ATTR_SIZE], char targetRel[ATTR_SIZE], int tar_nAttrs, char tar_Attrs[][ATTR_SIZE])
 {
+  TRACE_FUNC("Algebra");
   int srcRelId = OpenRelTable::getRelId(srcRel);
   if (srcRelId == E_RELNOTOPEN)
     return E_RELNOTOPEN;
@@ -259,6 +263,7 @@ int Algebra::project(char srcRel[ATTR_SIZE], char targetRel[ATTR_SIZE], int tar_
 
 int Algebra::join(char srcRelation1[ATTR_SIZE], char srcRelation2[ATTR_SIZE], char targetRelation[ATTR_SIZE], char attribute1[ATTR_SIZE], char attribute2[ATTR_SIZE])
 {
+  TRACE_FUNC("Algebra");
   int relId1 = OpenRelTable::getRelId(srcRelation1);
   if (relId1 == E_RELNOTOPEN)
     return E_RELNOTOPEN;
