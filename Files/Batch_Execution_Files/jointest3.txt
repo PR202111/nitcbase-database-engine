@@ -1,0 +1,31 @@
+echo ----Q3 Organizers Test----
+echo
+CREATE TABLE Events(id NUM, title STR, location STR);
+CREATE TABLE Participants(regNo NUM, event STR);
+CREATE TABLE Organizers(name STR, eventId NUM);
+echo
+OPEN TABLE Events;
+INSERT INTO Events VALUES FROM events.csv;
+echo
+OPEN TABLE Participants;
+INSERT INTO Participants VALUES FROM participants.csv;
+echo
+OPEN TABLE Organizers;
+INSERT INTO Organizers VALUES FROM organizers.csv;
+echo
+echo ----Join Participants with Events----
+SELECT * FROM Participants JOIN Events INTO PartEvents WHERE Participants.event = Events.title;
+echo
+OPEN TABLE PartEvents;
+echo
+echo ----Join with Organizers----
+SELECT * FROM PartEvents JOIN Organizers INTO FullData WHERE Events.id = Organizers.eventId;
+echo
+OPEN TABLE FullData;
+echo
+echo ----Thomas query----
+SELECT regNo, event FROM FullData INTO ThomasPeople WHERE name = Thomas;
+echo
+OPEN TABLE ThomasPeople;
+echo
+echo ----DONE----

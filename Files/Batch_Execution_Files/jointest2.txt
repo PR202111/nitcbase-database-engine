@@ -1,0 +1,20 @@
+echo ----Q2 Error Testing----
+echo
+CREATE TABLE Events(id NUM, title STR, location STR);
+CREATE TABLE EventRating(id NUM, title STR, rating NUM);
+echo
+OPEN TABLE Events;
+INSERT INTO Events VALUES FROM events.csv;
+echo
+OPEN TABLE EventRating;
+echo
+echo -- Duplicate attribute test --
+SELECT * FROM Events JOIN EventRating INTO LocRating WHERE Events.id = EventRating.id;
+echo
+echo -- Type mismatch test --
+SELECT * FROM Events JOIN EventRating INTO LocRating WHERE Events.id = EventRating.name;
+echo
+echo -- Attribute not exist test --
+SELECT * FROM Events JOIN EventRating INTO LocRating WHERE Events.id = EventRating.title;
+echo
+echo ----DONE----

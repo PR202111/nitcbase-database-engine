@@ -1,0 +1,42 @@
+echo ----Creating relations----
+echo
+CREATE TABLE Events(id NUM, title STR, location STR);
+CREATE TABLE Locations(name STR, capacity NUM);
+CREATE TABLE Participants(regNo NUM, event STR);
+echo
+OPEN TABLE Events;
+INSERT INTO Events VALUES FROM events.csv;
+echo
+OPEN TABLE Locations;
+INSERT INTO Locations VALUES FROM locations.csv;
+echo
+OPEN TABLE Participants;
+INSERT INTO Participants VALUES FROM participants.csv;
+echo ----Q1.1 EventLocations----
+SELECT location FROM Events INTO EventLocations;
+OPEN TABLE EventLocations;
+echo ----Q1.2 AudiPeople----
+SELECT * FROM Events INTO AudiEvents WHERE location = Audi;
+OPEN TABLE AudiEvents;
+echo
+SELECT * FROM Participants JOIN AudiEvents INTO AudiPeopleJoin WHERE Participants.event = AudiEvents.title;
+OPEN TABLE AudiPeopleJoin;
+echo
+SELECT regNo, event FROM AudiPeopleJoin INTO AudiPeople;
+OPEN TABLE AudiPeople;
+echo ----Q1.3 MiniEventPeople----
+SELECT * FROM Locations INTO MiniLoc WHERE capacity >= 100;
+OPEN TABLE MiniLoc;
+echo
+SELECT * FROM MiniLoc INTO MiniLoc2 WHERE capacity <= 200;
+OPEN TABLE MiniLoc2;
+echo
+SELECT * FROM Events JOIN MiniLoc2 INTO MiniEvents WHERE Events.location = MiniLoc2.name;
+OPEN TABLE MiniEvents;
+echo
+SELECT * FROM Participants JOIN MiniEvents INTO MiniJoin WHERE Participants.event = MiniEvents.title;
+OPEN TABLE MiniJoin;
+echo
+SELECT regNo, event FROM MiniJoin INTO MiniEventPeople;
+OPEN TABLE MiniEventPeople;
+echo ----DONE----
