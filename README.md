@@ -90,3 +90,6 @@ TRACE_FUNC("ModuleName");
 -   See real execution flow
 -   Learn system-level design
 
+## 📄 License
+
+This project is licensed under the MIT License.
