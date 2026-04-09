@@ -81,7 +81,7 @@ int BlockAccess::renameRelation(char oldName[ATTR_SIZE], char newName[ATTR_SIZE]
   strcpy(newRelationName.sVal, newName);
 
   RecId recId1;
-  recId1 = linearSearch(RELCAT_RELID, RELCAT_ATTR_RELNAME, newRelationName, EQ);
+  recId1 = linearSearch(RELCAT_RELID, (char *)RELCAT_ATTR_RELNAME, newRelationName, EQ);
 
   if (recId1.block != -1 && recId1.slot != -1)
     return E_RELEXIST;
@@ -92,7 +92,7 @@ int BlockAccess::renameRelation(char oldName[ATTR_SIZE], char newName[ATTR_SIZE]
   strcpy(oldRelationName.sVal, oldName);
 
   RecId recId2;
-  recId2 = linearSearch(RELCAT_RELID, RELCAT_ATTR_RELNAME, oldRelationName, EQ);
+  recId2 = linearSearch(RELCAT_RELID, (char *)RELCAT_ATTR_RELNAME, oldRelationName, EQ);
 
   if (recId2.block == -1 && recId2.slot == -1)
     return E_RELNOTEXIST;
@@ -108,7 +108,7 @@ int BlockAccess::renameRelation(char oldName[ATTR_SIZE], char newName[ATTR_SIZE]
   while (true)
   {
     RecId recId3;
-    recId3 = linearSearch(ATTRCAT_RELID, ATTRCAT_ATTR_RELNAME, oldRelationName, EQ);
+    recId3 = linearSearch(ATTRCAT_RELID, (char *)ATTRCAT_ATTR_RELNAME, oldRelationName, EQ);
 
     if (recId3.block == -1 && recId3.slot == -1)
       break;
@@ -130,7 +130,7 @@ int BlockAccess::renameAttribute(char relName[ATTR_SIZE], char oldName[ATTR_SIZE
   strcpy(relNameAttr.sVal, relName);
 
   RecId recId1;
-  recId1 = linearSearch(RELCAT_RELID, RELCAT_ATTR_RELNAME, relNameAttr, EQ);
+  recId1 = linearSearch(RELCAT_RELID, (char *)RELCAT_ATTR_RELNAME, relNameAttr, EQ);
 
   if (recId1.block == -1 && recId1.slot == -1)
     return E_RELNOTEXIST;
@@ -142,7 +142,7 @@ int BlockAccess::renameAttribute(char relName[ATTR_SIZE], char oldName[ATTR_SIZE
   while (true)
   {
     RecId recId2;
-    recId2 = linearSearch(ATTRCAT_RELID, ATTRCAT_ATTR_RELNAME, relNameAttr, EQ);
+    recId2 = linearSearch(ATTRCAT_RELID, (char *)ATTRCAT_ATTR_RELNAME, relNameAttr, EQ);
     if (recId2.block == -1 && recId2.slot == -1)
       break;
     RecBuffer attrBuffer(recId2.block);

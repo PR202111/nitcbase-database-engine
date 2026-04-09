@@ -85,18 +85,18 @@ int Frontend::select_attrlist_from_table_where(char relname_source[ATTR_SIZE], c
                                                char attribute[ATTR_SIZE], int op, char value[ATTR_SIZE])
 {
   TRACE_FUNC("Frontend");
-  int ret = Algebra::select(relname_source, TEMP, attribute, op, value);
+  int ret = Algebra::select(relname_source, (char *)TEMP, attribute, op, value);
   if (ret != SUCCESS)
     return ret;
-  int relId = OpenRelTable::openRel(TEMP);
+  int relId = OpenRelTable::openRel((char *)TEMP);
   if (relId < 0)
   {
-    Schema::deleteRel(TEMP);
+    Schema::deleteRel((char *)TEMP);
     return relId;
   }
-  ret = Algebra::project(TEMP, relname_target, attr_count, attr_list);
-  Schema::closeRel(TEMP);
-  Schema::deleteRel(TEMP);
+  ret = Algebra::project((char *)TEMP, relname_target, attr_count, attr_list);
+  Schema::closeRel((char *)TEMP);
+  Schema::deleteRel((char *)TEMP);
   return ret;
 }
 
@@ -114,18 +114,18 @@ int Frontend::select_attrlist_from_join_where(char relname_source_one[ATTR_SIZE]
                                               int attr_count, char attr_list[][ATTR_SIZE])
 {
   TRACE_FUNC("Frontend");
-  int ret = Algebra::join(relname_source_one, relname_source_two, TEMP, join_attr_one, join_attr_two);
+  int ret = Algebra::join(relname_source_one, relname_source_two, (char *)TEMP, join_attr_one, join_attr_two);
   if (ret != SUCCESS)
     return ret;
-  int relId = OpenRelTable::openRel(TEMP);
+  int relId = OpenRelTable::openRel((char *)TEMP);
   if (relId < 0)
   {
-    Schema::deleteRel(TEMP);
+    Schema::deleteRel((char *)TEMP);
     return relId;
   }
-  Algebra::project(TEMP, relname_target, attr_count, attr_list);
+  Algebra::project((char *)TEMP, relname_target, attr_count, attr_list);
   OpenRelTable::closeRel(relId);
-  Schema::deleteRel(TEMP);
+  Schema::deleteRel((char *)TEMP);
   return SUCCESS;
 }
 
