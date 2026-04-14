@@ -3,7 +3,8 @@
 
 #include "trace.h"
 
-// Proper RAII class
+#ifdef TRACE
+
 class TraceScope {
 public:
     TraceScope(const char* module, const char* func) {
@@ -15,8 +16,13 @@ public:
     }
 };
 
-// clean macro
 #define TRACE_FUNC(module) \
     TraceScope __trace_scope(module, __func__)
+
+#else
+
+#define TRACE_FUNC(module)
+
+#endif
 
 #endif

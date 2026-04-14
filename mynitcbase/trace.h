@@ -2,93 +2,64 @@
 #define TRACE_H
 
 #include <iostream>
-#include <map>
-#include <string>
 #include <vector>
+#include <string>
 
 using namespace std;
 
-// ---------- NODE ----------
-struct TraceNode {
-    string name;
-    int count = 0;
-    map<string, TraceNode*> children;
-};
+// ===== GLOBAL STATE =====
+extern vector<string> traceLog;
+extern vector<bool> branchActive; // track vertical lines
 
-// ---------- GLOBAL STATE ----------
-extern vector<string> callStack;
-extern TraceNode* root;
-
-// ---------- SAFE DELETE TREE ----------
-inline void freeTree(TraceNode* node) {
-    if (!node) return;
-    for (auto &child : node->children) {
-        freeTree(child.second);
-    }
-    delete node;
-}
-
-// ---------- INIT PER COMMAND ----------
+// ===== START =====
 inline void TRACE_START(string command) {
-    if (root) {
-        freeTree(root);   // ✅ proper cleanup
-    }
-    root = new TraceNode();
-    root->name = command;
-    callStack.clear();
+    traceLog.clear();
+    branchActive.clear();
+
+    cout << "\n=== Command: " << command << " ===\n";
 }
 
-// ---------- ENTER FUNCTION ----------
-inline void TRACE_ENTER(string module, string func) {
-    // ✅ SAFETY: ensure root exists
-    if (!root) {
-        root = new TraceNode();
-        root->name = "UNKNOWN";
+// ===== BUILD PREFIX =====
+inline string buildPrefix() {
+    string prefix = "";
+
+    for (size_t i = 0; i < branchActive.size(); i++) {
+        if (branchActive[i])
+            prefix += "|   ";
+        else
+            prefix += "    ";
     }
 
-    string full = module + "::" + func;
-    callStack.push_back(full);
-
-    TraceNode* curr = root;
-
-    for (auto &s : callStack) {
-        if (curr->children.count(s) == 0) {
-            curr->children[s] = new TraceNode();
-            curr->children[s]->name = s;
-        }
-        curr = curr->children[s];
-    }
-
-    curr->count++;
+    return prefix;
 }
 
-// ---------- EXIT FUNCTION ----------
+// ===== ENTER =====
+inline void TRACE_ENTER(const char* module, const char* func) {
+    string prefix = buildPrefix();
+
+    if (!branchActive.empty()) {
+        prefix += "|____ ";
+    }
+
+    traceLog.push_back(prefix + string(module) + "::" + string(func));
+
+    branchActive.push_back(true);
+}
+
+// ===== EXIT =====
 inline void TRACE_EXIT() {
-    if (!callStack.empty()) {
-        callStack.pop_back();   // ✅ safe pop
+    if (!branchActive.empty()) {
+        branchActive.pop_back();
     }
 }
 
-// ---------- PRINT TREE ----------
-inline void printTree(TraceNode* node, int depth = 0) {
-    if (!node) return;
-
-    if (depth == 0) {
-        cout << "\n=== Command: " << node->name << " ===\n";
-    } else {
-        for (int i = 0; i < depth - 1; i++) cout << " │   ";
-        cout << " ├── " << node->name << " (x" << node->count << ")\n";
-    }
-
-    for (auto &child : node->children) {
-        printTree(child.second, depth + 1);
-    }
-}
-
-// ---------- END COMMAND ----------
+// ===== END =====
 inline void TRACE_END() {
-    if (!root) return;   // ✅ safety
-    printTree(root);
+    cout << "\n=== Execution Trace ===\n";
+    for (auto &line : traceLog) {
+        cout << line << endl;
+    }
+    cout << endl;
 }
 
 #endif
