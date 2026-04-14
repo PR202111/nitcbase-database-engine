@@ -7,59 +7,87 @@
 
 using namespace std;
 
-// ===== GLOBAL STATE =====
-extern vector<string> traceLog;
-extern vector<bool> branchActive; // track vertical lines
+// ---------- NODE ----------
+struct TraceNode {
+    string name;
+    int count = 1;
+    vector<TraceNode*> children;
+};
 
-// ===== START =====
-inline void TRACE_START(string command) {
-    traceLog.clear();
-    branchActive.clear();
+// ---------- GLOBAL ----------
+extern vector<TraceNode*> nodeStack;
+extern TraceNode* root;
 
-    cout << "\n=== Command: " << command << " ===\n";
+// ---------- FREE TREE ----------
+inline void freeTree(TraceNode* node) {
+    if (!node) return;
+    for (auto child : node->children)
+        freeTree(child);
+    delete node;
 }
 
-// ===== BUILD PREFIX =====
-inline string buildPrefix() {
-    string prefix = "";
+// ---------- START ----------
+inline void TRACE_START(string cmd) {
+    if (root) freeTree(root);
+    root = nullptr;
+    nodeStack.clear();
+}
 
-    for (size_t i = 0; i < branchActive.size(); i++) {
-        if (branchActive[i])
-            prefix += "|   ";
-        else
-            prefix += "    ";
+// ---------- ENTER ----------
+inline void TRACE_ENTER(string module, string func) {
+    string full = module + "::" + func;
+
+    TraceNode* newNode = new TraceNode();
+    newNode->name = full;
+
+    if (nodeStack.empty()) {
+        root = newNode;
+    } else {
+        TraceNode* parent = nodeStack.back();
+
+        // ✅ merge consecutive duplicates
+        if (!parent->children.empty() &&
+            parent->children.back()->name == full) {
+
+            parent->children.back()->count++;
+            nodeStack.push_back(parent->children.back());
+            return;
+        }
+
+        parent->children.push_back(newNode);
     }
 
-    return prefix;
+    nodeStack.push_back(newNode);
 }
 
-// ===== ENTER =====
-inline void TRACE_ENTER(const char* module, const char* func) {
-    string prefix = buildPrefix();
-
-    if (!branchActive.empty()) {
-        prefix += "|____ ";
-    }
-
-    traceLog.push_back(prefix + string(module) + "::" + string(func));
-
-    branchActive.push_back(true);
-}
-
-// ===== EXIT =====
+// ---------- EXIT ----------
 inline void TRACE_EXIT() {
-    if (!branchActive.empty()) {
-        branchActive.pop_back();
-    }
+    if (!nodeStack.empty())
+        nodeStack.pop_back();
 }
 
-// ===== END =====
+// ---------- PRINT ----------
+inline void printTree(TraceNode* node, int depth = 0) {
+    if (!node) return;
+
+    for (int i = 0; i < depth; i++)
+        cout << "|   ";
+
+    cout << "|____ " << node->name;
+
+    if (node->count > 1)
+        cout << " (x" << node->count << ")";
+
+    cout << "\n";
+
+    for (auto child : node->children)
+        printTree(child, depth + 1);
+}
+
+// ---------- END ----------
 inline void TRACE_END() {
     cout << "\n=== Execution Trace ===\n";
-    for (auto &line : traceLog) {
-        cout << line << endl;
-    }
-    cout << endl;
+    printTree(root);
 }
 
 #endif

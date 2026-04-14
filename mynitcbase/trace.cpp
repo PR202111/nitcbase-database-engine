@@ -1,4 +1,5 @@
 #include "trace.h"
 
-vector<string> traceLog;
-vector<bool> branchActive;
+// DEFINE globals (ONLY ONCE)
+vector<TraceNode*> nodeStack;
+TraceNode* root = nullptr;
